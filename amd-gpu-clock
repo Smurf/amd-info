@@ -1,0 +1,99 @@
+INFO=`aticonfig --odgc`
+
+maxclock(){
+    CLOCK=$(echo "$INFO" | grep 'Current Peak :*' | grep -o -P '[0-9]+' | head -1 )
+    echo "$CLOCK Mhz"
+    exit 1
+}
+
+minclock(){
+    CLOCK=$(echo "$INFO" | grep 'Configurable Peak Range :*' | grep -o -P '[0-9]+' | head -1 )
+    echo "$CLOCK Mhz"
+    exit 1
+}
+
+maxmemory(){
+    CLOCK=$(echo "$INFO" | grep 'Current Peak :*' | grep -o -P '[0-9]+' | tail -n 1)
+    echo "$CLOCK Mhz"
+    exit 1
+}
+
+minmemory(){
+    CLOCK=$(echo "$INFO" | grep 'Configurable Peak Range :*' | grep -o -P '[0-9]+' | sed -n '3p')
+    echo "$CLOCK Mhz"
+    exit 1
+}
+
+current_clock(){
+    CLOCK=$(echo "$INFO" | grep 'Current Clocks :*' | grep -o -P '[0-9]+' | head -1 )
+    echo "$CLOCK Mhz"
+    exit 1
+}
+
+current_memory_clock(){
+    CLOCK=$(echo "$INFO" | grep 'Current Clocks :*' | grep -o -P '[0-9]+' | tail -n 1 )
+    echo "$CLOCK Mhz"
+    exit 1
+}
+
+show_help(){
+    cat << EOF
+USAGE: ${0##*/} [-h -m -mn -mm -gc -mc]
+This useful utility produces info about your AMD video card such as the
+maximum clock, minimum clock and current clock of the GPU and GDDR memory.
+
+IMPORTANT NOTICE:
+These values displayed are what your specific driver configuration will allow
+the GPU to clock up and down to.
+
+-h                      Display Help
+-m (--maxclock)         Display Maximum clock speed at current configuration in Mhz.
+-mn (--minclock)        Display the minimum clock speed at current configuration in Mhz.
+-mm (--maxmemory)       This is the maximum memory clock of the current config in Mhz.
+-mnm (--minmemory)      This is the minimum memory clock of the current config in Mhz.
+-gc (--gpu-clock)       This is the current clock speed of the GPU.
+-mc (--memory-clock)    This is the current clock speed of the memory.
+EOF
+}
+
+while [[ $# > 0 ]]
+do
+    key="$1"
+    shift
+
+    case $key in
+        -m|--maxclock)
+        maxclock 
+        shift
+        ;;
+        -mn|--minclock)
+        minclock
+        shift
+        ;;
+        -mm|--maxmemory)
+        maxmemory
+        shift
+        ;;
+        -mnm|--minmemory)
+        minmemory
+        shift
+        ;;
+        -gc|--gpu-clock)
+        current_clock
+        shift
+        ;;
+        -mc|--memory-clock)
+        current_memory_clock
+        shift
+        ;;
+        -h|--help)
+        show_help
+        shift
+        ;;
+        *)
+        show_help        # unknown option
+        ;;
+    esac
+done
+
+#aticonfig --odgc | grep '%' | sed 's/GPU load :    */GPU: /' | sed -e 's/^[ \t]*//'

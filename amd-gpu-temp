@@ -1,0 +1,1 @@
+aticonfig --odgt | grep 'C' | sed 's/Sensor 0: Temperature -*/GPU Temp:/' | sed -e 's/^[ \t]*//'

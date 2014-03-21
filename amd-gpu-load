@@ -1,0 +1,1 @@
+aticonfig --odgc | grep '%' | sed 's/GPU load :    */GPU: /' | sed -e 's/^[ \t]*//'
